@@ -121,14 +121,14 @@
         QuestionNameId++;
         var div = document.createElement("div");
         div.setAttribute("id", "Q" + QuestionNameId);
-        div.innerHTML = "<textarea name=\"question " + QuestionNameId + "\" style=\"width:500px;\" > </textarea><input type=\"file\" accept=\"image/*\"  name=\"image " + QuestionNameId + "\"> <a style=\"color:red;\" onclick=\"return deleteField(this)\" href=\"#\">Удалить вопрос</a>";
+        div.innerHTML = "<textarea name=\"question " + QuestionNameId + "\" style=\"width:500px;\" autofocus required></textarea><input type=\"file\" accept=\"image/*\"  name=\"image " + QuestionNameId + "\"> <a style=\"color:red;\" onclick=\"return deleteField(this)\" href=\"#\">Удалить вопрос</a>";
         document.getElementById("parentId").appendChild(div);
         return false;
     }
     function addAnswerOption() {
         optionNameId++;
         var div = document.createElement("div");
-        div.innerHTML = "<input type=\"checkbox\" name=\"checkOption " + QuestionNameId + "  " + optionNameId + "\" ><textarea name=\"option " + QuestionNameId + "  " + optionNameId + "\" style=\"width:500px;\" > </textarea> <a style=\"color:red;\" onclick=\"return deleteField(this)\" href=\"#\">Удалить вариант ответа</a> ";
+        div.innerHTML = "<input type=\"checkbox\" name=\"checkOption " + QuestionNameId + "  " + optionNameId + "\" ><textarea name=\"option " + QuestionNameId + "  " + optionNameId + "\" style=\"width:500px;\" autofocus required ></textarea> <a style=\"color:red;\" onclick=\"return deleteField(this)\" href=\"#\">Удалить вариант ответа</a> ";
         document.getElementById("Q" + QuestionNameId).appendChild(div);
         return false;
     }
