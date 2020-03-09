@@ -1,0 +1,28 @@
+﻿@using WebPL.Models;
+@using Entities;
+@using Ioc;
+@{
+    if (!User.IsInRole("Admin"))
+    {
+        Response.SetStatus(HttpStatusCode.Forbidden);
+    }
+
+    Layout = "~/_Layout.cshtml";
+    string subjectId = Request.QueryString["subjectId"];
+    if (int.TryParse(subjectId, out int result))
+    {
+        try
+        {
+            DependencyResolver.SubjectLogic.DeleteById(result);
+            Response.Redirect("~/Subjects/Subjects");
+
+        }
+        catch (Exception ex)
+        {
+            <div class="alert alert-danger">
+                @ex.Message
+            </div>
+        }
+    }
+}
+

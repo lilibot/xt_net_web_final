@@ -1,0 +1,46 @@
+﻿@using WebPL.Models;
+@using Entities;
+@using Ioc;
+@{
+    if (!User.IsInRole("Admin"))
+    {
+        Response.SetStatus(HttpStatusCode.Forbidden);
+    }
+    Layout = "~/_Layout.cshtml";
+    var accounts = DependencyResolver.AccountLogic.GetAll();
+}
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <table>
+            <thead>
+                <tr>
+                    <th>Login</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var account in accounts)
+                {
+                    <tr>
+                        <td>
+                            <p>@account.Login</p>
+                        </td>
+
+                        <td>
+                            @if (account.Role.Equals("Admin"))
+                            {
+                                <a class="btn btn-outline-dark" role="button" href="~/Accounts/ChangeRole?accountId=@account.Id&roleId=2">Change role to user</a>
+                            }
+                            else
+                            {
+                                <a class="btn btn-outline-dark" role="button" href="~/Accounts/ChangeRole?accountId=@account.Id&roleId=1">Change role to admin</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>

@@ -1,0 +1,18 @@
+﻿@using WebPL.Models;
+@using Entities;
+@using Ioc;
+@{
+    Layout = "~/_Layout.cshtml";
+    var categories = DependencyResolver.CategoryLogic.GetAll();
+    var subjects = DependencyResolver.SubjectLogic.GetAll();
+}
+@RenderPage("~/Tests/_partialTestSearch.cshtml")
+<script>
+
+
+    function getHref() {
+        var selectedCategory = document.getElementById("SearchCategory").value;
+        var selectedSubject = document.getElementById("SearchSubject").value;
+        window.location.replace("Tests/ShowTests?subjectId=" + selectedSubject + "&categoryId=" + selectedCategory);
+    }
+</script>

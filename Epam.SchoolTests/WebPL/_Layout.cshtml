@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>School tests</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        * {
+            padding: 5px;
+        }
+        nav {
+            padding: 0px;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+            <a class="navbar-brand" href="~/Tests/ShowTests">School tests</a>
+            <ul class="navbar-nav">
+                @if (User.IsInRole("Admin"))
+                {
+                    @*<li class="navbar-brand"><a class="nav-link" href="~/Users/ShowUsers">Show users</a></li>
+            <li class="navbar-brand"><a class="nav-link" href="~/Users/AddUser">Add user</a></li>
+            <li class="navbar-brand"><a class="nav-link" href="~/Awards/ShowAwards">Show awards</a></li>
+            <li class="navbar-brand"><a class="nav-link" href="~/Awards/AddAward">Add award</a></li>*@
+                    <li class="navbar-brand"><a class="nav-link" href="~/Accounts/ShowAccounts">Admin accounts</a></li>
+                    <li class="navbar-brand dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown">Admin tests </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="~/Categories/ShowCategories">Admin categories</a>
+                            <a class="dropdown-item" href="~/Categories/AddCategory">Add category</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="~/Subjects/ShowSubjects">Admin subjects</a>
+                            <a class="dropdown-item" href="~/Subjects/AddSubject">Add subject</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="~/Tests/AddTest">Add test</a>
+                        </div>
+                    </li>
+
+                }
+            </ul>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <div class="text-right"> <a class="btn btn-outline-light" href="~/Auth/Logout.cshtml" title="" style="font-size:large">User: @User.Identity.Name | Sign out</a></div>
+            }
+            else
+            {
+
+                <div class="text-right"><a class="btn btn-outline-light" href="~/Auth/Login" style="font-size:large"> Guest. Sign in</a></div>
+
+                <div class="text-right"> <a class="btn btn-outline-light" href="~/Auth/Registration" style="font-size:large"> Registration</a></div>
+            }
+
+        </nav>
+    </div>
+    <div>
+        @RenderBody()
+    </div>
+    <script src="~/Scripts/jquery-3.4.1.slim.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+</body>
+</html>

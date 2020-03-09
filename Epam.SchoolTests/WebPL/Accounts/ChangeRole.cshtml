@@ -1,0 +1,32 @@
+﻿@using WebPL.Models;
+@using Entities;
+@using Ioc;
+@{
+    if (!User.IsInRole("Admin"))
+    {
+        Response.SetStatus(HttpStatusCode.Forbidden);
+    }
+
+    Layout = "~/_Layout.cshtml";
+    string userIdStr = Request.QueryString["accountId"];
+    string roleIdStr = Request.QueryString["roleId"];
+    if (int.TryParse(userIdStr, out int userId))
+    {
+        if (int.TryParse(roleIdStr, out int roleId))
+        {
+            try
+            {
+                DependencyResolver.AccountLogic.UpdateRole(userId, roleId);
+                Response.Redirect("~/Accounts/ShowAccounts");
+
+            }
+            catch (Exception ex)
+            {
+                <div class="alert alert-danger">
+                    @ex.Message
+                </div>
+            }
+        }
+    }
+}
+

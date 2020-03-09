@@ -1,0 +1,46 @@
+﻿@using WebPL.Models;
+@using Entities;
+@using Ioc;
+@{
+    var categories = DependencyResolver.CategoryLogic.GetAll();
+    var subjects = DependencyResolver.SubjectLogic.GetAll();
+    string strCategoryId = Request.QueryString["categoryId"];
+    string strSubjectId = Request.QueryString["subjectId"];
+    if (int.TryParse(strCategoryId, out int categoryId) & int.TryParse(strSubjectId, out int subjectId))
+    {
+    }
+}
+        <div class="form-inline">
+            <label for="Category">Сategory: </label>
+            <select class="browser-default custom-select" name="Category" id="SearchCategory">
+                <option value="0">Выберите катеорию</option>
+                @foreach (Category category in categories)
+                {
+                    if (categoryId == @category.ID)
+                    {
+                        <option selected value="@category.ID">@category.Name</option>
+                    }
+                    else
+                    {
+                        <option value="@category.ID">@category.Name</option>}
+                }
+                }
+            </select>
+            <label for="Subject">Subject: </label>
+            <select class="browser-default custom-select" name="Subject" id="SearchSubject">
+                <option value="0">Выберите предмет</option>
+                @foreach (Subject subject in subjects)
+                {
+                    if (subjectId == subject.ID)
+                    {
+                        <option selected value="@subject.ID">@subject.Name  </option>
+                    }
+                    else
+                    {
+                        <option value="@subject.ID">@subject.Name</option>}
+                }
+                }
+            </select>
+            <a class="btn btn-outline-dark" role="button" onclick="return getHref()" href="#">Поиск</a>
+        </div>
+

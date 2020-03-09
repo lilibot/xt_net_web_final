@@ -1,0 +1,44 @@
+﻿@using WebPL.Models;
+@using Entities;
+@using Ioc;
+@{
+    if (!User.IsInRole("Admin"))
+    {
+        Response.SetStatus(HttpStatusCode.Forbidden);
+    }
+    Layout = "~/_Layout.cshtml";
+    var categories = DependencyResolver.CategoryLogic.GetAll();
+}
+
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var category in categories)
+                    {
+                        <tr>
+                            <td style="width:35px;">
+                                <p>@category.ID</p>
+                            </td>
+                            <td>
+                                <p>@category.Name</p>
+                            </td>
+                            <td>
+                                <a class="btn btn-outline-dark" role="button" href="~/Categories/DeleteCategory?categoryId=@category.ID">Delete</a>
+                            </td>
+                            <td>
+                                <a class="btn btn-outline-dark" role="button" href="~/Categories/UpdateCategory?categoryId=@category.ID">Edit</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>

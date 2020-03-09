@@ -1,0 +1,41 @@
+﻿@using WebPL.Models;
+@using Entities;
+@using Ioc;
+@{
+    if (!User.IsInRole("Admin"))
+    {
+        Response.SetStatus(HttpStatusCode.Forbidden);
+    }
+
+    Layout = "~/_Layout.cshtml";
+    if (IsPost)
+    {
+        var title = Request["title"];
+        try
+        {
+            if (String.IsNullOrWhiteSpace(title))
+            {
+                throw new ArgumentException("Title can't be null or empty");
+            }
+
+                DependencyResolver.SubjectLogic.Add(new Subject { Name = title });
+            Response.Redirect("~/Subjects/ShowSubjects");
+        }
+        catch (Exception ex)
+        {
+            <div class="alert alert-danger">
+                @ex.Message
+            </div>
+        }
+    }
+}
+
+
+<form method="post" class="form-inline" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="name">Name: </label>
+        <input type="text" class="form-control" id="title" name="title" placeholder="Enter title">
+        <button type="submit" class="btn btn-info"> Add subject</button>
+        <br /><br />
+    </div>
+</form>

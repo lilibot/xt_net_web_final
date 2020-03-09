@@ -1,0 +1,28 @@
+﻿@using WebPL.Models;
+@using Entities;
+@using Ioc;
+@{
+    if (!User.IsInRole("Admin"))
+    {
+        Response.SetStatus(HttpStatusCode.Forbidden);
+    }
+
+    Layout = "~/_Layout.cshtml";
+    string categoryId = Request.QueryString["categoryId"];
+    if (int.TryParse(categoryId, out int result))
+    {
+        try
+        {
+            DependencyResolver.CategoryLogic.DeleteById(result);
+            Response.Redirect("~/Categories/ShowCategories");
+
+        }
+        catch (Exception ex)
+        {
+            <div class="alert alert-danger">
+                @ex.Message
+            </div>
+        }
+    }
+}
+

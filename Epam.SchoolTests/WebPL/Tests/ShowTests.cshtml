@@ -1,0 +1,70 @@
+﻿@using WebPL.Models;
+@using Entities;
+@using Ioc;
+@{
+
+    Layout = "~/_Layout.cshtml";
+    var tests = DependencyResolver.TestLogic.GetListOfTests();
+    string strCategoryId = Request.QueryString["categoryId"];
+    string strSubjectId = Request.QueryString["subjectId"];
+    if (int.TryParse(strCategoryId, out int categoryId) && int.TryParse(strSubjectId, out int subjectId))
+    {
+        tests = tests.Where(x => (categoryId!=0?x.Category.ID == categoryId:true) & (subjectId!=0?x.Subject.ID == subjectId:true));
+    }
+}
+@RenderPage("_partialTestSearch.cshtml")
+@if (tests.Count() == 0)
+{
+    <p>По данному запросу тесты не найдены</p>
+}
+else
+{
+<div class="panel panel-default">
+    <div class="panel-body">
+        <table>
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Subject</th>
+                    <th>Description</th>
+                    <th>Time</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var test in tests)
+                {
+                    <tr>
+                        <td style="width:35px;">
+                            <p>@test.Category.Name</p>
+                        </td>
+
+                        <td>
+                            <p>@test.Subject.Name</p>
+                        </td>
+                        <td>
+                            <p>@test.Description</p>
+                        </td>
+                        <td>
+                            <p>@test.Time</p>
+                        </td>
+                        <td>
+                            <a class="btn btn-outline-dark" role="button" href="~/Tests/PassTheTest?testId=@test.ID">Пройти тест</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>
+}
+<script>
+
+
+function getHref() {
+    var selectedCategory = document.getElementById("SearchCategory").value;
+     var selectedSubject = document.getElementById("SearchSubject").value;
+    window.location.replace("ShowTests?subjectId="+selectedSubject+"&categoryId="+selectedCategory);
+}
+</script>

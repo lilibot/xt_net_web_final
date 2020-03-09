@@ -1,0 +1,135 @@
+﻿@using WebPL.Models;
+@using Entities;
+@using Ioc;
+@{
+
+    if (!User.IsInRole("Admin"))
+    {
+        Response.SetStatus(HttpStatusCode.Forbidden);
+    }
+
+    Layout = "~/_Layout.cshtml";
+
+
+    var categories = DependencyResolver.CategoryLogic.GetAll();
+    var subjects = DependencyResolver.SubjectLogic.GetAll();
+
+    if (IsPost)
+    {
+        string strCategory = Request["category"];
+        string ctrSubject = Request["subject"];
+        if ((int.TryParse(strCategory, out int IdCategory)) && (int.TryParse(ctrSubject, out int IdSubject)))
+        {
+            string strTime = Request["time"];
+            int.TryParse(strTime, out int time);
+            try
+            {
+                var keys = Request.Form.AllKeys;
+                bool isChecked = false;
+                List<Question> questions = new List<Question>();
+                for (int i = 1; i < keys.Count(); i++)
+                {
+                    string[] str = keys[i].Split(' ');
+                    if (str[0] == "question")
+                    {
+
+                        var photo = WebImage.GetImageFromRequest("image " + str[1]);
+                        byte[] data = null;
+                        if (photo != null)
+                        {
+                            photo.Resize(100, 100, preserveAspectRatio: true, preventEnlarge: true);
+                            data = photo.GetBytes(photo.ImageFormat);
+                        }
+                        questions.Add(new Question() { Text = Request[keys[i]], Image = data });
+                    }
+
+
+                    if (str[0] == "checkOption")
+                    {
+                        isChecked = true;
+                    }
+                    if (str[0] == "option")
+                    {
+                        questions[questions.Count - 1].Answers.Add(new Answer() { AnswerText = Request[keys[i]], IsCorrect = isChecked });
+                        isChecked = false;
+                    }
+                }
+                Category category = DependencyResolver.CategoryLogic.GetById(IdCategory);
+                Subject subject = DependencyResolver.SubjectLogic.GetById(IdSubject);
+                Test test = new Test() { Description = Request["description"], Time = time, Category = category, Subject = subject, Questions = questions };
+                DependencyResolver.TestLogic.AddTest(test);
+            }
+            catch (Exception ex)
+            {
+                <div class="alert alert-danger">
+                    @ex.Message;
+                </div>
+            }
+        }
+    }
+
+}
+<form method="post" class="form-inline" enctype="multipart/form-data">
+
+    <div id="parentId">
+
+        <div class="form-group">
+            <label for="Category">Select category: </label>
+            <select class="browser-default custom-select" name="Category">
+                @foreach (Category category in categories)
+                {
+                    <option value="@category.ID">@category.Name  </option>
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="Subject">Select subject: </label>
+            <select class="browser-default custom-select" name="Subject">
+                @foreach (Subject subject in subjects)
+                {
+                    <option value="@subject.ID">@subject.Name  </option>
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="time">Minutes for testing: </label>
+            <input type="text" class="form-control" id="time" name="time" placeholder="Enter time for testing">
+        </div>
+        <div class="form-group">
+            <label for="description">Описание теста: </label>
+            <textarea style="width:500px;" class="form-control" name="description" placeholder="Description"></textarea>
+        </div>
+        <button type="submit" class="btn btn-info">Save test</button>
+        <a class="btn btn-outline-dark" role="button" onclick="return addQuestion()" href="#">Добавить вопрос</a>
+        <a id="LinkAnswerOption" class="btn btn-outline-dark" role="button" onclick="return addAnswerOption()" href="#">Добавить вариант ответа</a>
+
+    </div>
+
+
+</form>
+
+<script>
+
+    var QuestionNameId = 1; // Уникальное значение для атрибута name
+    var optionNameId = 1;
+    function deleteField(a) {
+        var contDiv = a.parentNode;
+        contDiv.parentNode.removeChild(contDiv);
+        return false;
+    }
+    function addQuestion() {
+        QuestionNameId++;
+        var div = document.createElement("div");
+        div.setAttribute("id", "Q" + QuestionNameId);
+        div.innerHTML = "<textarea name=\"question " + QuestionNameId + "\" style=\"width:500px;\" > </textarea><input type=\"file\" accept=\"image/*\"  name=\"image " + QuestionNameId + "\"> <a style=\"color:red;\" onclick=\"return deleteField(this)\" href=\"#\">Удалить вопрос</a>";
+        document.getElementById("parentId").appendChild(div);
+        return false;
+    }
+    function addAnswerOption() {
+        optionNameId++;
+        var div = document.createElement("div");
+        div.innerHTML = "<input type=\"checkbox\" name=\"checkOption " + QuestionNameId + "  " + optionNameId + "\" ><textarea name=\"option " + QuestionNameId + "  " + optionNameId + "\" style=\"width:500px;\" > </textarea> <a style=\"color:red;\" onclick=\"return deleteField(this)\" href=\"#\">Удалить вариант ответа</a> ";
+        document.getElementById("Q" + QuestionNameId).appendChild(div);
+        return false;
+    }
+</script>

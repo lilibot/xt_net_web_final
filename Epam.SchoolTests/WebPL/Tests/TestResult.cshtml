@@ -1,0 +1,24 @@
+﻿@using WebPL.Models;
+@using Entities;
+@using Ioc;
+@{
+
+    Layout = "~/_Layout.cshtml";
+    string strTestId = Request.QueryString["testId"];
+    string strAnswers = Request.QueryString["countCorrectAnswers"];
+    string strUserAnswers = Request.QueryString["countCorrectUserAnswers"];
+    Test test = null;
+    if (int.TryParse(strTestId, out int testId)&int.TryParse(strAnswers, out int answers)&int.TryParse(strUserAnswers, out int userAnswers))
+    {
+
+    }
+
+}
+<form method="post" enctype="multipart/form-data">
+    
+    <div class="alert alert-info" role="alert">
+        <p class="h3">Тест завершен. У Вас  @strUserAnswers правильных ответов из @strAnswers</p>
+    </div>
+</form>
+
+

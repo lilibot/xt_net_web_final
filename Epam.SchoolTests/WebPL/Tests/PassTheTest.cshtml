@@ -1,0 +1,118 @@
+﻿@using WebPL.Models;
+@using Entities;
+@using Ioc;
+@{
+
+    Layout = "~/_Layout.cshtml";
+    string strTestId = Request.QueryString["testId"];
+    Test test = null;
+    if (int.TryParse(strTestId, out int testId))
+    {
+        test = DependencyResolver.TestLogic.GetAllTestById(testId);
+        if (IsPost)
+        {
+
+            var keys = Request.Form.AllKeys;
+            List<TestingResult> userAnswers = new List<TestingResult>();
+            for (int i = 0; i < keys.Count(); i++)
+            {
+                string[] str = keys[i].Split(' ');
+                if (str[0] == "check")
+                {
+                    userAnswers.Add(new TestingResult() { IdAnswer = int.Parse(str[1]) });
+                }
+                else
+                {
+                    userAnswers.Add(new TestingResult() { IdAnswer = int.Parse(Request[keys[i]]), IdQuestion = int.Parse(keys[i]) });
+                }
+
+
+            }
+            var correctAnswers = DependencyResolver.TestLogic.GetCorrectAnswersByTestId(testId);
+            int countCorrectAnswers = correctAnswers.Count();
+            int countCorrectUserAnswers = 0;
+            foreach (Answer correctAnswer in correctAnswers)
+            {
+                foreach (TestingResult userAnswer in userAnswers)
+                {
+                    if (correctAnswer.ID == userAnswer.IdAnswer)
+                    {
+                        countCorrectUserAnswers++;
+                    }
+                }
+            }
+            if (User.Identity.IsAuthenticated)
+            {
+                Testing testing = new Testing() { Date = DateTime.Now, Test = testId, Account = DependencyResolver.AccountLogic.GetId(User.Identity.Name) };
+                testing.TestingResult = userAnswers;
+                DependencyResolver.TestLogic.AddTestingResult(testing);
+
+            }
+            Response.Redirect("TestResult?testId=" + testId + "&countCorrectAnswers="
+                + countCorrectAnswers + "&countCorrectUserAnswers=" + countCorrectUserAnswers);
+        }
+
+
+    }
+
+}
+<form method="post" enctype="multipart/form-data">
+    @if (test != null)
+    {
+        if (test.Time > 0)
+        {
+            <div class="alert alert-info" role="alert">
+                Оставшееся время: <p id="timer">@(test.Time * 60)</p>
+            </div>
+        }
+        else
+        {
+            <p>Тест без ограничения по времени</p>
+        }
+        foreach (Question question in test.Questions)
+        {
+            <div>
+                <p>@question.Text</p>
+                @if (question.Image != null)
+                {
+                    <img class="awardList_item__image" src="data:image/jpeg;base64,@Convert.ToBase64String(question.Image)" alt="Question image" />
+                }
+                @if (question.Answers.Where(x => x.IsCorrect).Count() > 1)
+                {
+                    foreach (Answer answer in question.Answers)
+                    {
+                        <p>
+                            <input type="checkbox" name="check @answer.ID" />@answer.AnswerText
+                        </p>
+                    }
+                }
+                else
+                {
+                    foreach (Answer answer in question.Answers)
+                    {
+                        <p>
+                            <input type="radio" value=@answer.ID name=@question.ID />@answer.AnswerText
+                        </p>
+                    }
+                }
+            </div>
+            <br>
+        }
+        <button type="submit" id="submitForm" class="btn btn-info">Завершить</button>
+
+    }
+</form>
+
+<script type="text/javascript">
+
+    (function startTimer() {
+        let timer = document.getElementById('timer');
+        let time = timer.innerText;
+
+        if (time == 0) {
+            $('#submitForm').click();
+        } else { timer.innerText--; }
+
+        setTimeout(startTimer, 1000);
+    }());
+</script>

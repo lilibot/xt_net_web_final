@@ -1,0 +1,50 @@
+﻿@using WebPL.Models;
+@using Entities;
+@using Ioc;
+
+@{
+    if (!User.IsInRole("Admin"))
+    {
+        Response.SetStatus(HttpStatusCode.Forbidden);
+    }
+
+    Layout = "~/_Layout.cshtml";
+    string subjectId = Request.QueryString["subjectId"];
+    if (int.TryParse(subjectId, out int id))
+    {
+        Subject subject = DependencyResolver.SubjectLogic.GetById(id);
+        <div class="form-group">
+            <label> Subject name - @subject.Name</label>
+        </div>
+        if (IsPost)
+        {
+            var name = Request["name"];
+            try
+            {
+                if (String.IsNullOrEmpty(name))
+                {
+                    throw new ArgumentException("Name can't be null or empty");
+                }
+                DependencyResolver.SubjectLogic.Update(id, new Subject{ Name = name});
+                Response.Redirect("~/Subjects/ShowSubjects");
+
+            }
+
+            catch (Exception ex)
+            {
+                <div class="alert alert-danger">
+                    @ex.Message
+                </div>
+            }
+        }
+    }
+}
+
+
+<form method="post" class="form-inline" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="name">New name: </label>
+        <input type="text" class="form-control" id="name" name="name" placeholder="Enter the name">
+        <button type="submit" class="btn btn-info">Edit subject</button>
+    </div>
+</form>
